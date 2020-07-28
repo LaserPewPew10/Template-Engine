@@ -12,59 +12,61 @@ const OUTPUT_DIR = path.resolve(__dirname, "output");
 const outputPath = path.join(OUTPUT_DIR, "team.html");
 const render = require("./lib/htmlRenderer");
 // writeFile will create html page
-//const writeFileAsync = util.promisify(fs.writeFile);
+const writeFileAsync = util.promisify(fs.writeFile);
 // READFILE ASYNC DEPENDENCY
 //const readFileAsync = jest.promisify(fs.readFile);
 // HINT: each employee type (manager, engineer, or intern) has slightly different
 // information; write your code to ask different questions via inquirer depending on
 // employee type.
-const questions = [
-  {
-    type: "list",
-    message: "What type of team member would you like to add?",
-    name: "role",
-    choices: ["Manager", "Engineer", "Intern"],
-    //include a function with if statement to check member type and the corresponding questions
-  },
-  {
-    type: "input",
-    message: "What is the name of the team member?",
-    name: "name",
-  },
-  {
-    type: "input",
-    message: "What is the id of the team member?",
-    name: "id",
-  },
-  {
-    type: "input",
-    message: "What is the email of the team member?",
-    name: "email",
-  },
-  //if a manager,add office number
-  {
-    type: "input",
-    message: "What is the office number of the manager?",
-    name: "office",
-  },
-  //if an engineer add github
-  {
-    type: "input",
-    message: "What is the Github user name of the engineer?",
-    name: "github",
-  },
-  //if an intern, add school
-  {
-    type: "input",
-    message: "What is the school attended by the intern?",
-    name: "school",
-  },
-];
+function promptQuestions() {
+  return inquirer.prompt([
+    {
+      type: "list",
+      message: "What type of team member would you like to add?",
+      name: "role",
+      choices: ["Manager", "Engineer", "Intern"],
+      //include a function with if statement to check member type and the corresponding questions
+    },
+    {
+      type: "input",
+      message: "What is the name of the team member?",
+      name: "name",
+    },
+    {
+      type: "input",
+      message: "What is the id of the team member?",
+      name: "id",
+    },
+    {
+      type: "input",
+      message: "What is the email of the team member?",
+      name: "email",
+    },
+    //if a manager,add office number
+    {
+      type: "input",
+      message: "What is the office number of the manager?",
+      name: "office",
+    },
+    //if an engineer add github
+    {
+      type: "input",
+      message: "What is the Github user name of the engineer?",
+      name: "github",
+    },
+    //if an intern, add school
+    {
+      type: "input",
+      message: "What is the school attended by the intern?",
+      name: "school",
+    },
+  ]);
+}
 // Write code to use inquirer to gather information about the development team members,
 //FUNCTIONS
 //GET USER INPUT ====== inquirer prompt
 async function init() {
-  const response = await inquirer.prompt(questions);
+  const response = await promptQuestions();
   console.log(response);
 }
 init();
