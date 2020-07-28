@@ -17,59 +17,171 @@ const writeFileAsync = util.promisify(fs.writeFile);
 //const readFileAsync = jest.promisify(fs.readFile);
 // HINT: each employee type (manager, engineer, or intern) has slightly different
 // information; write your code to ask different questions via inquirer depending on
+const teamArray = [];
+// HELPER FUNCTION
+function newTeamMember() {
+  return inquirer
+    .prompt([
+      {
+        type: "confirm",
+        message: "Would you like to add anymore team members?",
+        name: "member",
+      },
+    ])
+    .then(function (yes) {
+      if (yes.member === true) {
+        promptQuestions();
+      } else {
+        renderFile();
+      }
+    })
+    .catch(function (err) {
+      console.log(err);
+    });
+}
 // employee type.
 function promptQuestions() {
-  return inquirer.prompt([
-    {
-      type: "list",
-      message: "What type of team member would you like to add?",
-      name: "role",
-      choices: ["Manager", "Engineer", "Intern"],
-      //include a function with if statement to check member type and the corresponding questions
-    },
-    {
-      type: "input",
-      message: "What is the name of the team member?",
-      name: "name",
-    },
-    {
-      type: "input",
-      message: "What is the id of the team member?",
-      name: "id",
-    },
-    {
-      type: "input",
-      message: "What is the email of the team member?",
-      name: "email",
-    },
-    //if a manager,add office number
-    {
-      type: "input",
-      message: "What is the office number of the manager?",
-      name: "office",
-    },
-    //if an engineer add github
-    {
-      type: "input",
-      message: "What is the Github user name of the engineer?",
-      name: "github",
-    },
-    //if an intern, add school
-    {
-      type: "input",
-      message: "What is the school attended by the intern?",
-      name: "school",
-    },
-  ]);
+  return inquirer
+    .prompt([
+      {
+        type: "list",
+        message: "What is your role?",
+        choices: ["Engineer", "Intern", "Manager"],
+        name: "role",
+      },
+    ])
+    .then(function (reply) {
+      if (reply.role === "Engineer") {
+        inquirer
+          .prompt([
+            {
+              type: "input",
+              message: "What is your name?",
+              name: "name",
+            },
+            {
+              type: "input",
+              message: "What is your github username?",
+              name: "github",
+            },
+            {
+              type: "input",
+              message: "What is your employee ID?",
+              name: "id",
+            },
+            {
+              type: "input",
+              message: "What is your email address?",
+              name: "email",
+            },
+          ])
+          .then(function (engineerReply) {
+            const newEngineer = new Engineer(
+              engineerReply.name,
+              engineerReply.id,
+              engineerReply.email,
+              engineerReply.github
+            );
+            console.log(newEngineer);
+            // employeeId = employeeId++;
+            teamArray.push(newEngineer);
+            newTeamMember();
+          });
+      } else if (reply.role === "Manager") {
+        inquirer
+          .prompt([
+            {
+              type: "input",
+              message: "What is your name?",
+              name: "name",
+            },
+            {
+              type: "input",
+              message: "What is your email address?",
+              name: "email",
+            },
+            {
+              type: "input",
+              message: "What is your employee id?",
+              name: "id",
+            },
+            {
+              type: "input",
+              message: "What is your office number?",
+              name: "office",
+            },
+          ])
+          .then(function (managerReply) {
+            const newManager = new Manager(
+              managerReply.name,
+              managerReply.id,
+              managerReply.email,
+              managerReply.office
+            );
+            console.log(newManager);
+            // employeeId = employeeId++;
+            teamArray.push(newManager);
+            newTeamMember();
+          });
+      } else if (reply.role === "Intern") {
+        inquirer
+          .prompt([
+            {
+              type: "input",
+              message: "What is your name?",
+              name: "name",
+            },
+            {
+              type: "input",
+              message: "What is your email address?",
+              name: "email",
+            },
+            {
+              type: "input",
+              message: "What is your employee id?",
+              name: "id",
+            },
+            {
+              type: "input",
+              message: "Where did you go to school?",
+              name: "school",
+            },
+          ])
+          .then(function (internReply) {
+            const newIntern = new Intern(
+              internReply.name,
+              internReply.id,
+              internReply.email,
+              internReply.school
+            );
+            console.log(newIntern);
+            teamArray.push(newIntern);
+            newTeamMember();
+          });
+      }
+    })
+    .catch(function (err) {
+      console.log(err);
+    });
 }
 // Write code to use inquirer to gather information about the development team members,
 //FUNCTIONS
 //GET USER INPUT ====== inquirer prompt
-async function init() {
-  const response = await promptQuestions();
-  console.log(response);
+function init() {
+  promptQuestions();
 }
 init();
+
+// will use async function with try and catch block as well as generate the html.
+async function renderFile() {
+  try {
+    const userAnswers = await render(teamArray);
+    writeFileAsync(outputPath, userAnswers);
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 // let newUserData = generateHTML(response);
 // writeFileAsync(“user-data.html”, newUserData);
 
